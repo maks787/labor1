@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -9,23 +9,23 @@ namespace labor1
         Label lblA;
         Label lblB;
         Label lblC;
-        Rectangle Rectangle = new Rectangle(10, 10, 200, 100);
-        Rectangle Circle = new Rectangle(220, 10, 150, 150);
-        Rectangle Square = new Rectangle(380, 10, 150, 150);
+        Label lblV;
+        Label picBoxA;
+        Label picBoxB;
+        Label picBoxC;
+        int LastClicked;
+        bool PictureBoxClicked = false;
+        int ClickedPictureBoxX, ClickedPictureBoxY;
 
-
-        bool RectangleClicked = false;
-        int RectangleX, RectangleY;
         public Form1()
         {
-
             this.Height = 500;
             this.Width = 700;
             this.Text = "";
             this.BackColor = Color.LightGray;
 
             lblA = new Label();
-            lblA.Text = "Вид";
+            lblA.Text = "2+2=";
             lblA.Location = new Point(50, 370);
             lblA.Visible = true;
             lblA.Size = new Size(140, 70);
@@ -33,7 +33,7 @@ namespace labor1
             lblA.TextAlign = ContentAlignment.MiddleCenter;
 
             lblB = new Label();
-            lblB.Text = "Форма";
+            lblB.Text = "3+3=";
             lblB.Location = new Point(270, 370);
             lblB.Visible = true;
             lblB.Size = new Size(140, 70);
@@ -41,44 +41,100 @@ namespace labor1
             lblB.TextAlign = ContentAlignment.MiddleCenter;
 
             lblC = new Label();
-            lblC.Text = "Форма";
+            lblC.Text = "5+5=";
             lblC.Location = new Point(500, 370);
             lblC.Visible = true;
             lblC.Size = new Size(140, 70);
             lblC.BackColor = Color.Gray;
             lblC.TextAlign = ContentAlignment.MiddleCenter;
 
+            lblV = new Label();
+            lblV.Text = "";
+
+            lblV.Location = new Point(500, 20);
+            lblV.Visible = true;
+            lblV.Size = new Size(50, 30);
+            lblV.BackColor = Color.Gray;
+            lblV.TextAlign = ContentAlignment.MiddleCenter;
+
+            picBoxA = pictureboxMove("4", 10, 10, 70, 70);
+            picBoxB = pictureboxMove("6", 220, 10, 70, 70);
+            picBoxC = pictureboxMove("10", 380, 10, 70, 70);
+
             this.Controls.Add(lblC);
             this.Controls.Add(lblB);
             this.Controls.Add(lblA);
+            this.Controls.Add(lblV);
 
-            this.Paint += new PaintEventHandler(Form1_Paint);
-            this.MouseMove += new MouseEventHandler(Form1_MouseMove);
+            this.Controls.Add(picBoxA);
+            this.Controls.Add(picBoxB);
+            this.Controls.Add(picBoxC);
 
+            picBoxA.MouseMove += new MouseEventHandler(PictureBox_MouseMove);
+            picBoxB.MouseMove += new MouseEventHandler(PictureBox_MouseMove);
+            picBoxC.MouseMove += new MouseEventHandler(PictureBox_MouseMove);
 
+            picBoxA.MouseDown += new MouseEventHandler(PictureBox_MouseDown);
+            picBoxB.MouseDown += new MouseEventHandler(PictureBox_MouseDown);
+            picBoxC.MouseDown += new MouseEventHandler(PictureBox_MouseDown);
 
+            picBoxA.MouseUp += new MouseEventHandler(PictureBox_MouseUp);
+            picBoxB.MouseUp += new MouseEventHandler(PictureBox_MouseUp);
+            picBoxC.MouseUp += new MouseEventHandler(PictureBox_MouseUp);
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
+        private Label pictureboxMove(string text, int x, int y, int width, int height)
         {
-            e.Graphics.FillEllipse(Brushes.Red, Circle);
-            e.Graphics.FillRectangle(Brushes.Blue, Rectangle);
-            e.Graphics.FillRectangle(Brushes.Green, Square);
+            Label pictureBox = new Label();
+            pictureBox.Text = text;
+            pictureBox.ForeColor = Color.Black;
+            pictureBox.Location = new Point(x, y);
+            pictureBox.Size = new Size(width, height);
+            pictureBox.BackColor = Color.White;
+            pictureBox.BorderStyle = BorderStyle.FixedSingle;
+            LastClicked_func();
+            return pictureBox;
         }
 
-        public void Form1_MouseMove(object sender, MouseEventArgs e)
+        private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            if ((e.X < Rectangle.X + Rectangle.Width) && (e.X > Rectangle.X) &&
-                (e.Y < Rectangle.Y + Rectangle.Height) && (e.Y > Rectangle.Y))
+            if (PictureBoxClicked)
             {
-                RectangleClicked = true;
-                RectangleX = e.X - Rectangle.X;
-                RectangleY = e.Y - Rectangle.Y;
-                Invalidate(); 
+                Label pictureBox = sender as Label;
+                pictureBox.Left = e.X + pictureBox.Left - ClickedPictureBoxX;
+                pictureBox.Top = e.Y + pictureBox.Top - ClickedPictureBoxY;
+                LastClicked_func();
             }
-            else
+        }
+
+        private void PictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            PictureBoxClicked = true;
+            Label pictureBox = sender as Label;
+            ClickedPictureBoxX = e.X;
+            ClickedPictureBoxY = e.Y;
+            LastClicked = 1;
+        }
+
+        private void PictureBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            PictureBoxClicked = false;
+            LastClicked_func();
+        }
+
+        private void LastClicked_func()
+        {
+            if (LastClicked == 1)
             {
-                RectangleClicked = false;
+                if ((lblA.Left < picBoxA.Right) && (lblA.Right > picBoxA.Left) &&
+                    (lblA.Top < picBoxA.Bottom) && (lblA.Bottom > picBoxA.Top))
+                {
+                    lblV.Text = "Õige";
+                }
+                else
+                {
+                    lblV.Text = "";
+                }
             }
         }
     }
